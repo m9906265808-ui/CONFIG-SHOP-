@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PVsameni | کانفیگ اینترنت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ══════════ THEMES ══════════ */
+:root{
+  --bg:#02020c;--surf:#07071a;--card:#0d0d22;
+  --p:#00c3ff;--p2:#ff2d7a;--p3:#a855f7;
+  --text:#cce4ff;--muted:#2e3a5a;--border:#14142e;
+  --grad:linear-gradient(135deg,#00c3ff,#ff2d7a 55%,#a855f7);
+  --grad2:linear-gradient(135deg,#ff2d7a,#a855f7);
+  --glow:0 0 30px rgba(0,195,255,.3),0 0 60px rgba(255,45,122,.1);
+  --nav-bg:rgba(2,2,12,.9);
+  --shadow:rgba(0,195,255,.2);
+}
+body.day{
+  --bg:#f0ebff;--surf:#ffffff;--card:#faf7ff;
+  --p:#6d28d9;--p2:#db2777;--p3:#4f46e5;
+  --text:#1e0a3c;--muted:#9d8bc0;--border:#ddd6fe;
+  --grad:linear-gradient(135deg,#6d28d9,#db2777 55%,#4f46e5);
+  --grad2:linear-gradient(135deg,#db2777,#4f46e5);
+  --glow:0 0 30px rgba(109,40,217,.15);
+  --nav-bg:rgba(240,235,255,.92);
+  --shadow:rgba(109,40,217,.15);
+}
+body.sameni{
+  --bg:#000000;--surf:#040a04;--card:#070f07;
+  --p:#00ff41;--p2:#00e536;--p3:#39ff14;
+  --text:#d0ffd8;--muted:#165a1a;--border:#0b220b;
+  --grad:linear-gradient(135deg,#00ff41,#39ff14);
+  --grad2:linear-gradient(135deg,#39ff14,#00ff41);
+  --glow:0 0 30px rgba(0,255,65,.35),0 0 70px rgba(0,255,65,.1);
+  --nav-bg:rgba(0,0,0,.94);
+  --shadow:rgba(0,255,65,.2);
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);cursor:none;overflow-x:hidden;transition:background .4s,color .4s;min-height:100vh}
+
+/* ══════════ BG ══════════ */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:orbf 18s ease-in-out infinite}
+.orb1{width:700px;height:700px;background:var(--p);top:-200px;right:-150px;opacity:.12}
+.orb2{width:550px;height:550px;background:var(--p2);bottom:-150px;left:-100px;opacity:.1;animation-delay:-7s}
+.orb3{width:350px;height:350px;background:var(--p3);top:38%;left:38%;opacity:.09;animation-delay:-13s}
+@keyframes orbf{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(50px,-60px) scale(1.08)}70%{transform:translate(-35px,35px) scale(.93)}}
+.grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:44px 44px;opacity:.5;animation:gpulse 10s ease-in-out infinite}
+@keyframes gpulse{0%,100%{opacity:.5}50%{opacity:.7}}
+
+/* ══════════ CURSOR ══════════ */
+#cur{width:18px;height:18px;border:2px solid var(--p);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-radius .2s,border-color .2s,box-shadow .2s;box-shadow:var(--glow)}
+#cur2{width:4px;height:4px;background:var(--p);border-radius:50%;position:fixed;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);transition:background .3s}
+body.hc #cur{width:62px;height:62px;border-radius:14px;border-color:var(--p2);box-shadow:0 0 40px var(--shadow),0 0 80px rgba(255,45,122,.1)}
+body.hb #cur{width:34px;height:34px;border-color:var(--p3);box-shadow:0 0 18px var(--shadow)}
+body.hl #cur{width:26px;height:26px;border-radius:4px;border-color:var(--p)}
+
+/* ══════════ SCROLL ══════════ */
+#sp{position:fixed;top:0;left:0;height:2px;background:var(--grad);z-index:1000}
+
+/* ══════════ NAV ══════════ */
+nav{position:fixed;top:0;width:100%;z-index:500;padding:.85rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:var(--nav-bg);backdrop-filter:blur(22px);border-bottom:1px solid var(--border);transition:all .4s}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.logo-cursor{animation:blink .75s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.nav-right{display:flex;align-items:center;gap:.8rem}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#00ff41;box-shadow:0 0 6px #00ff41;animation:sdot 2s infinite}
+@keyframes sdot{0%,100%{opacity:1}50%{opacity:.4}}
+.status-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted)}
+.theme-row{display:flex;gap:.3rem;padding:.25rem;background:var(--surf);border:1px solid var(--border);border-radius:8px}
+.td{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.td:hover{transform:scale(1.25)}
+.td.on{border-color:rgba(255,255,255,.7);box-shadow:0 0 8px rgba(255,255,255,.3)}
+.td1{background:linear-gradient(135deg,#00c3ff,#ff2d7a)}
+.td2{background:linear-gradient(135deg,#6d28d9,#db2777)}
+.td3{background:linear-gradient(135deg,#00ff41,#39ff14)}
+
+/* ══════════ PAGES ══════════ */
+.pg{display:none;position:relative;z-index:1;min-height:100vh}
+.pg.on{display:block}
+
+/* ══════════ HOME ══════════ */
+.hero{padding:8rem 2rem 2.5rem;text-align:center}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-bottom:1.2rem;animation:fu .7s ease both}
+.hero-h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;letter-spacing:-4px;line-height:1.0;margin-bottom:.8rem;animation:fu .8s ease .1s both}
+.hero-h1 .g{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-h1 .glitch{position:relative;display:inline-block}
+.hero-h1 .glitch::before,.hero-h1 .glitch::after{content:attr(data-t);position:absolute;inset:0;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-h1 .glitch::before{animation:ga 5s infinite;clip-path:polygon(0 20%,100% 20%,100% 45%,0 45%)}
+.hero-h1 .glitch::after{animation:gb 5s infinite;clip-path:polygon(0 65%,100% 65%,100% 85%,0 85%)}
+@keyframes ga{0%,87%,100%{transform:translate(0)}89%{transform:translate(-3px,1px)}91%{transform:translate(3px,-1px)}}
+@keyframes gb{0%,85%,100%{transform:translate(0)}87%{transform:translate(3px,2px)}89%{transform:translate(-2px,-2px)}}
+.hero-sub{font-size:.95rem;color:var(--muted);line-height:1.8;margin-bottom:2rem;animation:fu .8s ease .2s both}
+.hero-badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;animation:fu .8s ease .3s both}
+.hb{font-family:'JetBrains Mono',monospace;font-size:.68rem;padding:.3rem .75rem;border:1px solid var(--border);border-radius:4px;color:var(--muted);background:var(--surf);transition:all .2s}
+.hb.lit{border-color:var(--p);color:var(--p);background:rgba(0,195,255,.07);box-shadow:0 0 10px rgba(0,195,255,.12)}
+@keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* MAIN CARDS ROW */
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;max-width:1050px;margin:0 auto;padding:0 2rem 5rem}
+
+/* CARD BASE */
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem;cursor:pointer;transition:all .32s;position:relative;overflow:hidden;animation:fu .7s ease both}
+.mcard::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);transform:scaleX(0);transform-origin:right;transition:transform .35s}
+.mcard:hover{transform:translateY(-8px);border-color:var(--p);box-shadow:0 24px 60px rgba(0,0,0,.5),var(--glow)}
+.mcard:hover::after{transform:scaleX(1);transform-origin:left}
+.mcard-ico{font-size:2.6rem;display:block;margin-bottom:1rem;filter:drop-shadow(0 0 10px var(--shadow))}
+.mcard-title{font-size:1.35rem;font-weight:900;letter-spacing:-1px;margin-bottom:.4rem}
+.mcard-desc{font-size:.82rem;color:var(--muted);line-height:1.75;margin-bottom:1.3rem}
+.mcard-price-row{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem}
+.mcard-old{font-size:.75rem;color:var(--muted);text-decoration:line-through;font-family:'JetBrains Mono',monospace}
+.mcard-new{font-size:.95rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mcard-arr{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:700;color:var(--p);transition:gap .2s}
+.mcard:hover .mcard-arr{gap:.8rem}
+/* badge */
+.mcbadge{position:absolute;top:.9rem;left:.9rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;padding:.18rem .5rem;border-radius:4px}
+.hot{background:rgba(255,45,122,.12);border:1px solid #ff2d7a;color:#ff2d7a}
+.inf{background:rgba(0,229,54,.12);border:1px solid #00e536;color:#00e536}
+/* CARD 3 special */
+.mcard.buy-card{border-color:rgba(168,85,247,.3)}
+.mcard.buy-card::before{content:'';position:absolute;inset:-1px;border-radius:21px;background:var(--grad);z-index:-1;opacity:.35}
+.mcard.buy-card:hover{border-color:var(--p3);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px rgba(168,85,247,.2)}
+.buy-pulse{position:absolute;top:.9rem;right:.9rem;width:10px;height:10px;border-radius:50%;background:var(--p);animation:bp 1.6s infinite}
+@keyframes bp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:.4}}
+
+/* ══════════ BACK BTN ══════════ */
+.back{display:inline-flex;align-items:center;gap:.5rem;background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:.5rem 1rem;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:1.5rem;transition:all .2s}
+.back:hover{border-color:var(--p);color:var(--p)}
+
+/* ══════════ PAGE HEADER ══════════ */
+.pheader{text-align:center;margin-bottom:2.5rem}
+.ptag{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:.7rem}
+.ptitle{font-size:clamp(1.7rem,4vw,2.8rem);font-weight:900;letter-spacing:-2px}
+.ptitle span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ══════════ DAILY PAGE ══════════ */
+.daily-wrap{padding:7rem 2rem 4rem;max-width:1100px;margin:0 auto}
+.server-bar{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.srv{display:flex;align-items:center;gap:.45rem;padding:.45rem .9rem;border:1px solid var(--border);border-radius:7px;font-size:.78rem;font-weight:600;background:var(--surf)}
+.srv.best{border-color:var(--p);color:var(--p);background:rgba(0,195,255,.06)}
+.srv.best::after{content:'— سریع‌ترین ⚡';font-size:.65rem;opacity:.7;font-family:'JetBrains Mono',monospace}
+.notice-box{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.2rem;font-size:.8rem;color:var(--muted);margin-bottom:2rem;text-align:center;font-family:'JetBrains Mono',monospace;line-height:1.7}
+.notice-box strong{color:var(--text)}
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:1rem}
+
+/* CONFIG CARD */
+.cfg-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;position:relative;overflow:hidden;transition:all .28s;cursor:pointer}
+.cfg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--grad)}
+.cfg-card:hover{transform:translateY(-5px);border-color:var(--p);box-shadow:0 16px 40px rgba(0,0,0,.4),var(--glow)}
+.cfg-gb{font-family:'JetBrains Mono',monospace;font-size:2.1rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.cfg-gb-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);margin-bottom:.7rem;margin-top:.1rem}
+.disc-chip{display:inline-flex;align-items:center;gap:.3rem;background:linear-gradient(135deg,#dc2626,#ea580c);color:#fff;font-size:.6rem;font-weight:700;padding:.18rem .5rem;border-radius:4px;margin-bottom:.5rem;animation:dpulse 2.5s infinite}
+@keyframes dpulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}60%{box-shadow:0 0 0 5px rgba(220,38,38,0)}}
+.cfg-old{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-decoration:line-through;display:block}
+.cfg-new{font-size:1.1rem;font-weight:900;color:var(--text);font-family:'JetBrains Mono',monospace}
+.cfg-new .toman{font-size:.68rem;color:var(--muted);font-weight:400}
+.cfg-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.8rem;padding-top:.7rem;border-top:1px solid var(--border)}
+.cfg-type{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted)}
+.cfg-btn{font-size:.68rem;font-weight:700;color:var(--p);background:none;border:1px solid var(--border);border-radius:5px;padding:.22rem .55rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.cfg-btn:hover{background:var(--p);color:#000;border-color:var(--p)}
+.top-badge{position:absolute;top:-.4rem;right:1rem;background:var(--grad);color:#fff;font-size:.58rem;font-weight:700;padding:.18rem .55rem;border-radius:4px;box-shadow:0 2px 8px var(--shadow)}
+
+/* ══════════ UNLIMITED PAGE ══════════ */
+.ul-wrap{padding:7rem 2rem 4rem;max-width:680px;margin:0 auto}
+.ul-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:2.2rem;position:relative;overflow:hidden;text-align:center}
+.ul-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad)}
+.ul-icon{font-size:4rem;display:block;margin-bottom:1rem;animation:flt 3s ease-in-out infinite;filter:drop-shadow(0 0 14px var(--shadow))}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.ul-title{font-size:2rem;font-weight:900;letter-spacing:-2px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.8rem}
+.ul-badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:1rem 0}
+.ulbg{display:flex;align-items:center;gap:.35rem;padding:.35rem .8rem;border-radius:7px;font-size:.78rem;font-weight:700;border:1px solid}
+.ulbg.g{border-color:#10b981;color:#10b981;background:rgba(16,185,129,.07)}
+.ulbg.b{border-color:var(--p);color:var(--p);background:rgba(0,195,255,.07)}
+.ulbg.y{border-color:#f59e0b;color:#f59e0b;background:rgba(245,158,11,.07)}
+.ul-specs{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;margin:1.2rem 0;text-align:right}
+.spec-row{display:flex;align-items:center;gap:.7rem;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.spec-row:last-child{border-bottom:none}
+.spec-key{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.72rem;flex:1}
+.spec-val{font-weight:700;color:var(--text)}
+.spec-val.hi{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.price-box{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:1.3rem;margin:1.2rem 0;position:relative;overflow:hidden}
+.price-box::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:.04}
+.pb-save{position:absolute;top:.7rem;left:.7rem;background:linear-gradient(135deg,#dc2626,#ea580c);color:#fff;font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:5px;animation:dpulse 2s infinite}
+.pb-old{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--muted);text-decoration:line-through;margin-bottom:.3rem}
+.pb-new{font-size:3rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.pb-unit{font-size:.8rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:.3rem}
+.ul-note{font-size:.8rem;color:var(--muted);line-height:1.8;margin:1rem 0;text-align:right;background:var(--surf);border:1px solid var(--border);border-right:3px solid var(--p);border-radius:0 8px 8px 0;padding:.8rem 1rem}
+.cta-btn{width:100%;padding:1rem;background:var(--grad);color:#fff;border:none;border-radius:11px;font-size:1rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;letter-spacing:.3px}
+.cta-btn::after{content:'';position:absolute;top:-50%;left:-60%;width:55%;height:200%;background:rgba(255,255,255,.18);transform:skewX(-20deg);transition:left .5s}
+.cta-btn:hover::after{left:130%}
+.cta-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px var(--shadow)}
+
+/* ══════════ BUY PAGE ══════════ */
+.buy-wrap{padding:7rem 2rem 4rem;max-width:920px;margin:0 auto}
+.buy-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.bcard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem;transition:all .3s;position:relative;overflow:hidden}
+.bcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--grad)}
+.bcard:hover{transform:translateY(-5px);border-color:var(--p);box-shadow:0 20px 50px rgba(0,0,0,.4),var(--glow)}
+.bc-icon{font-size:2.2rem;margin-bottom:.9rem;display:block}
+.bc-title{font-size:1.1rem;font-weight:900;margin-bottom:.4rem}
+.bc-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.3rem;line-height:1.6}
+.link-item{display:flex;align-items:center;gap:.8rem;padding:.75rem .95rem;border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);background:var(--surf);transition:all .2s;margin-bottom:.6rem}
+.link-item:hover{border-color:var(--p);background:rgba(0,195,255,.05);transform:translateX(-4px)}
+.link-ico{font-size:1.3rem;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.link-ico.tg{background:rgba(0,136,204,.15);border:1px solid rgba(0,136,204,.3)}
+.link-ico.bl{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25)}
+.link-name{font-size:.85rem;font-weight:700}
+.link-handle{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.link-arr{margin-right:auto;color:var(--muted);font-size:.8rem}
+.desc-text{font-size:.85rem;color:var(--muted);line-height:2;margin-bottom:1rem}
+.desc-text strong{color:var(--text)}
+.iran-footer{text-align:center;padding:.8rem;background:var(--surf);border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-weight:700}
+.iran-footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:1px solid var(--p);color:var(--text);padding:.65rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;z-index:1000;transform:translateY(70px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--glow);pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+@media(max-width:720px){
+  nav{padding:.8rem 1.1rem}
+  .cards-row{grid-template-columns:1fr;padding:0 1rem 3rem}
+  .cfg-grid{grid-template-columns:repeat(3,1fr)}
+  .buy-grid{grid-template-columns:1fr}
+  .daily-wrap,.ul-wrap,.buy-wrap{padding:6rem 1rem 3rem}
+  .hero{padding:7rem 1rem 2rem}
+}
+</style>
+</head>
+<body>
+<!-- BG -->
+<canvas id="bgCanvas"></canvas>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<div class="grid"></div>
+<div id="cur"></div><div id="cur2"></div>
+<div id="sp"></div>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">PV<span class="logo-cursor">_</span>sameni</div>
+  <div class="nav-right">
+    <div class="status-dot"></div>
+    <span class="status-label">ONLINE</span>
+    <div class="theme-row">
+      <div class="td td1 on" onclick="setTheme('')" title="Night"></div>
+      <div class="td td2" onclick="setTheme('day')" title="Day"></div>
+      <div class="td td3" onclick="setTheme('sameni')" title="Sameni"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="pg on" id="pg-home">
+  <div class="hero">
+    <div class="hero-eyebrow">⟨ PVsameni Config Shop ⟩</div>
+    <h1 class="hero-h1">
+      <span class="glitch g" data-t="کانفیگ">کانفیگ</span><br>
+      <span style="font-size:.55em;font-weight:300;background:none;-webkit-text-fill-color:var(--muted)">اینترنت پایدار</span>
+    </h1>
+    <p class="hero-sub">
+      اتصال پایدار · سرعت بالا · قیمت منصفانه<br>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.8em;opacity:.65">🇳🇱 هلند &nbsp;·&nbsp; 🇨🇦 کانادا &nbsp;·&nbsp; 🇵🇱 لهستان &nbsp;·&nbsp; ... به زودی سرورهای جدید</span>
+    </p>
+    <div class="hero-badges">
+      <span class="hb lit">⚡ هلند — MAX SPEED</span>
+      <span class="hb">🇨🇦 کانادا</span>
+      <span class="hb">🇵🇱 لهستان</span>
+      <span class="hb lit">🔒 رمزنگاری قوی</span>
+      <span class="hb">⚙ V2Ray</span>
+    </div>
+  </div>
+
+  <div class="cards-row">
+    <!-- CARD 1: DAILY -->
+    <div class="mcard" onclick="goTo('daily')" style="animation-delay:.1s">
+      <div class="mcbadge hot">🔥 HOT</div>
+      <span class="mcard-ico">⏰</span>
+      <div class="mcard-title">یک روزه</div>
+      <div class="mcard-desc">کانفیگ ۲۴ ساعته از <strong style="color:var(--p)">۱ گیگ</strong> تا <strong style="color:var(--p2)">۳۰ گیگ</strong> — مناسب مصرف روزانه</div>
+      <div class="mcard-price-row">
+        <span class="mcard-old">۸,۰۰۰ ت/گیگ</span>
+        <span class="mcard-new">۳,۹۰۰ ت/گیگ</span>
+      </div>
+      <span class="mcard-arr">مشاهده قیمت‌ها <span>←</span></span>
+    </div>
+
+    <!-- CARD 2: UNLIMITED -->
+    <div class="mcard" onclick="goTo('unlimited')" style="animation-delay:.2s">
+      <div class="mcbadge inf">∞ UNLIMITED</div>
+      <span class="mcard-ico">♾️</span>
+      <div class="mcard-title">نامحدود</div>
+      <div class="mcard-desc"><strong style="color:var(--p)">۱۰ گیگ</strong> · زمان نامحدود · کاربر نامحدود<br><span style="font-size:.78rem;opacity:.6;font-family:'JetBrains Mono',monospace">یک‌بار بخر — همیشه استفاده کن</span></div>
+      <div class="mcard-price-row">
+        <span class="mcard-old">۱۰۰,۰۰۰ تومان</span>
+        <span class="mcard-new">۳۹,۰۰۰ تومان</span>
+      </div>
+      <span class="mcard-arr">مشاهده پلن <span>←</span></span>
+    </div>
+
+    <!-- CARD 3: BUY -->
+    <div class="mcard buy-card" onclick="goTo('buy')" style="animation-delay:.3s">
+      <div class="buy-pulse"></div>
+      <span class="mcard-ico" style="filter:drop-shadow(0 0 14px rgba(168,85,247,.5))">🛒</span>
+      <div class="mcard-title" style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">خرید کانفیگ</div>
+      <div class="mcard-desc">ارتباط مستقیم با فروشنده<br><span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;opacity:.6">تلگرام · بله · راهنمای خرید</span></div>
+      <span class="mcard-arr" style="color:var(--p3)">ارتباط با فروشنده <span>←</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DAILY PAGE ══════════ -->
+<div class="pg" id="pg-daily">
+  <div class="daily-wrap">
+    <button class="back" onclick="goTo('home')">← بازگشت</button>
+    <div class="pheader">
+      <div class="ptag">// Daily Config — یک روزه</div>
+      <h2 class="ptitle">کانفیگ‌های <span>یک روزه</span></h2>
+    </div>
+
+    <div class="server-bar">
+      <div class="srv best">🇳🇱 هلند</div>
+      <div class="srv">🇨🇦 کانادا</div>
+      <div class="srv">🇵🇱 لهستان</div>
+      <div class="srv" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.7rem">... به زودی سرورهای جدید</div>
+    </div>
+
+    <div class="notice-box">
+      <strong>⚡ قیمت هر گیگ:</strong> از ۸,۰۰۰ تومان کاهش یافت به <strong style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">۳,۹۰۰ تومان</strong>
+      &nbsp;|&nbsp; 🇳🇱 هلند · 🇨🇦 کانادا · 🇵🇱 لهستان &nbsp;|&nbsp; هلند بیشترین سرعت رو داره
+    </div>
+
+    <div class="cfg-grid" id="cfgGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════ UNLIMITED PAGE ══════════ -->
+<div class="pg" id="pg-unlimited">
+  <div class="ul-wrap">
+    <button class="back" onclick="goTo('home')">← بازگشت</button>
+    <div class="ul-box">
+      <span class="ul-icon">♾️</span>
+      <div class="ul-title">UNLIMITED PLAN</div>
+      <div class="ul-badges">
+        <div class="ulbg g">✓ کاربر نامحدود</div>
+        <div class="ulbg b">∞ زمان نامحدود</div>
+        <div class="ulbg y">⚡ سرعت بالا</div>
+      </div>
+
+      <div class="ul-specs">
+        <div class="spec-row"><span class="spec-key">[ TRAFFIC ]</span><span class="spec-val hi">۱۰ گیگابایت</span></div>
+        <div class="spec-row"><span class="spec-key">[ DURATION ]</span><span class="spec-val">بدون محدودیت زمانی</span></div>
+        <div class="spec-row"><span class="spec-key">[ USERS ]</span><span class="spec-val">بدون محدودیت کاربر</span></div>
+        <div class="spec-row"><span class="spec-key">[ SERVERS ]</span><span class="spec-val">🇳🇱 هلند · 🇨🇦 کانادا · 🇵🇱 لهستان</span></div>
+        <div class="spec-row"><span class="spec-key">[ FASTEST ]</span><span class="spec-val hi">هلند ⚡</span></div>
+        <div class="spec-row"><span class="spec-key">[ PROTOCOL ]</span><span class="spec-val">V2Ray / VMess</span></div>
+      </div>
+
+      <div class="price-box">
+        <div class="pb-save">۶۱٪ تخفیف!</div>
+        <div class="pb-old">قیمت اصلی: ۱۰۰,۰۰۰ تومان</div>
+        <div class="pb-new">۳۹,۰۰۰</div>
+        <div class="pb-unit">تومان — به ازای هر ۱۰ گیگ نامحدود</div>
+      </div>
+
+      <div class="ul-note">
+        💡 اگر نیاز به بیشتر از ۱۰ گیگ نامحدود دارید، می‌توانید چندین بسته خریداری کنید.<br>
+        مثال: ۲ بسته = ۲۰ گیگ نامحدود → <strong style="color:var(--p)">۷۸,۰۰۰ تومان</strong> &nbsp;|&nbsp; ۳ بسته = ۳۰ گیگ → <strong style="color:var(--p)">۱۱۷,۰۰۰ تومان</strong>
+      </div>
+
+      <div class="server-bar" style="margin-bottom:1.2rem">
+        <div class="srv best">🇳🇱 هلند</div>
+        <div class="srv">🇨🇦 کانادا</div>
+        <div class="srv">🇵🇱 لهستان</div>
+        <div class="srv" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.7rem">... به زودی سرورهای جدید</div>
+      </div>
+
+      <button class="cta-btn" onclick="goTo('buy')">⚡ یه کلید بزن بریم — ORDER NOW</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BUY PAGE ══════════ -->
+<div class="pg" id="pg-buy">
+  <div class="buy-wrap">
+    <button class="back" onclick="goTo('home')">← بازگشت</button>
+    <div class="pheader">
+      <div class="ptag">// Purchase — خرید</div>
+      <h2 class="ptitle">ارتباط با <span>فروشنده</span></h2>
+    </div>
+
+    <div class="buy-grid">
+      <!-- SELLER ID -->
+      <div class="bcard">
+        <span class="bc-icon">📡</span>
+        <div class="bc-title">آیدی فروشنده</div>
+        <div class="bc-sub">برای ثبت سفارش از طریق پیام‌رسان‌های زیر مستقیم وارد پیوی شوید:</div>
+
+        <a class="link-item" href="https://t.me/PVaas" target="_blank">
+          <div class="link-ico tg">✈️</div>
+          <div>
+            <div class="link-name">تلگرام فروشنده</div>
+            <div class="link-handle">@PVaas</div>
+          </div>
+          <span class="link-arr">←</span>
+        </a>
+
+        <a class="link-item" href="https://ble.ir/PVsameni" target="_blank">
+          <div class="link-ico bl">💬</div>
+          <div>
+            <div class="link-name">بله فروشنده</div>
+            <div class="link-handle">@PVsameni</div>
+          </div>
+          <span class="link-arr">←</span>
+        </a>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="bcard">
+        <span class="bc-icon">📋</span>
+        <div class="bc-title">توضیحات خرید</div>
+        <div class="desc-text">
+          درود دوستان 👋<br><br>
+          کانفیگ‌هایی با <strong>سرعت بالا</strong> و قیمت <strong>فوق‌العاده مناسب</strong> شرایط فعلی کشور خدمتتون آماده شده. توضیحات و جزئیات کامل رو می‌تونید مشاهده بفرمایید و در صورت نیاز به بنده پیام بدید. 🙏
+        </div>
+        <div class="iran-footer">
+          <span>همه با هم، در کنار هم، برای ایران 🇮🇷</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ── MATRIX RAIN ──
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+let W,H,drops=[];
+const chars='01アイウエオカキクケコABCDEFアウ<>/\\{}[]|◆';
+let rc='#00c3ff';
+function initCanvas(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+  drops=[];
+  for(let i=0;i<Math.floor(W/16);i++)drops[i]=Math.random()*-60;
+}
+initCanvas();
+window.addEventListener('resize',initCanvas);
+function drawRain(){
+  ctx.fillStyle='rgba(0,0,0,.045)';ctx.fillRect(0,0,W,H);
+  ctx.font='12px JetBrains Mono,monospace';
+  for(let i=0;i<drops.length;i++){
+    const bright=Math.random();
+    ctx.fillStyle=bright>.97?'#ffffff':bright>.85?rc+'88':rc+'44';
+    ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,drops[i]*16);
+    if(drops[i]*16>H&&Math.random()>.975)drops[i]=0;
+    drops[i]+=.45;
+  }
+}
+setInterval(drawRain,55);
+
+// ── CURSOR ──
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur2.style.left=mx+'px';cur2.style.top=my+'px';
+});
+(function animC(){
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cur.style.left=rx+'px';cur.style.top=ry+'px';
+  requestAnimationFrame(animC);
+})();
+function ch(t){
+  document.body.classList.remove('hc','hb','hl');
+  if(t)document.body.classList.add(t);
+}
+document.addEventListener('mouseover',e=>{
+  if(e.target.closest('.mcard,.bcard,.cfg-card,.ul-box'))ch('hc');
+  else if(e.target.closest('button,.back,.cta-btn,.cfg-btn,.link-item'))ch('hb');
+  else if(e.target.closest('a'))ch('hl');
+  else ch('');
+});
+
+// ── SCROLL BAR ──
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('sp').style.width=p+'%';
+});
+
+// ── THEME ──
+const themeColors={'':'#00c3ff','day':'#c026d3','sameni':'#00ff41'};
+const themeOpacity={'':'0.045','day':'0.025','sameni':'0.065'};
+function setTheme(t){
+  document.body.className=t;
+  document.querySelectorAll('.td').forEach(b=>b.classList.remove('on'));
+  const map={'':'td1','day':'td2','sameni':'td3'};
+  document.querySelector('.'+map[t]).classList.add('on');
+  rc=themeColors[t]||'#00c3ff';
+  ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(0,0,W,H);
+  try{localStorage.setItem('pvs_t',t)}catch(e){}
+}
+(function(){try{const t=localStorage.getItem('pvs_t');if(t!=null)setTheme(t)}catch(e){}})();
+
+// ── NAVIGATION ──
+function goTo(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  window.scrollTo(0,0);
+  if(id==='daily')renderConfigs();
+}
+
+// ── TOAST ──
+function showToast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ── CONFIG DATA ──
+// 1 تا 30 کامل، بدون 10
+const GBS=[1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
+const OLD_PER_GB=8000;
+const NEW_PER_GB=3900;
+
+function fmt(n){
+  return n.toLocaleString('fa-IR');
+}
+
+function renderConfigs(){
+  const grid=document.getElementById('cfgGrid');
+  grid.innerHTML=GBS.map(gb=>{
+    const oldP=gb*OLD_PER_GB;
+    const newP=gb*NEW_PER_GB;
+    const isBest=gb===10; // 10 نداریم — برچسب پرفروش برای 5 گیگ
+    const isTop=gb===5;
+    return`<div class="cfg-card">
+      ${isTop?`<div class="top-badge">⭐ پرفروش</div>`:''}
+      <div class="cfg-gb">${gb}</div>
+      <div class="cfg-gb-lbl">گیگابایت / ۲۴ ساعته</div>
+      <div class="disc-chip">🔥 51٪ تخفیف</div>
+      <span class="cfg-old">${fmt(oldP)} تومان</span>
+      <div class="cfg-new">${fmt(newP)} <span class="toman">تومان</span></div>
+      <div class="cfg-foot">
+        <span class="cfg-type">V2Ray</span>
+        <button class="cfg-btn" onclick="goTo('buy')">خرید ←</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
